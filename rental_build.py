@@ -47,10 +47,11 @@ class E12:
                 size = 'Middle'
             self.cursor.execute(
                 """
+                IF NOT EXISTS (SELECT 1 FROM Room_Size WHERE RoomID = ?)
                 INSERT INTO Room_Size(RoomID,Size)
                 VALUES (?,?)
                 """,
-                room, size
+                room, room, size
             )
         self.conn.commit()
 
@@ -170,6 +171,14 @@ class E12:
 
         print(f"{room} is now available.")
     
+    def clear_booking(self):
+        self.cursor.execute(
+            """
+            UPDATE RoomStatus
+            SET guest_name = NULL, field = NULL, booking_str = NULL, start_str = NULL, end_str = NULL, duration = NULL            
+        """)
+        self.cursor.commit()
+    
     def delete_booking(self,guest_name,room,booking_str,start_time):
         
         self.cursor.execute(
@@ -206,5 +215,5 @@ class E12:
         self.conn.close()
 
 
-p = E12()
-p.show_data(status=False)
+booking = E12()
+booking.rent(room='E12-101',guest_name='Khomchan',field='IE',booking_date='09-03-2025',start_time='9.00',end_time='10.00')
